@@ -9,22 +9,28 @@ var UCB_CLASS_URL = 'https://newyork.ucbtrainingcenter.com/course/open';
 // redis
 var redis = require('redis');
 var PORT = process.env.REDIS_PORT, HOST = process.env.REDIS_HOST;
-var client = redis.createClient(PORT, HOST); //creates a new client
+
+if (process.env.REDIS_URL) {
+  var client = redis.createClient(process.env.REDIS_URL);
+} else {
+  var client = redis.createClient(PORT, HOST); //creates a new client
+}
 
 var twitterCreds, tClient;
 try {
   twitterCreds = require('./config/twitter_creds');
-  tClient = new twitter({
-    consumer_key: process.env.CONSUMER_KEY || twitterCreds.consumer_key,
-    consumer_secret: process.env.CONSUMER_SECRET || twitterCreds.consumer_secret,
-    access_token_key: process.env.ACCESS_TOKEN_KEY || twitterCreds.access_token_key,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET || twitterCreds.access_token_secret
-  });
 } catch (e) {
   console.log(e);
-  console.log('ERR: Either there are no environment vars for twitter credentials set or there is no config file in the config/twitter_creds path');
-  process.exit();
+  console.log('ERR: There is no config file in the config/twitter_creds path - Hope you have process envs set');
+  twitterCreds = {};
 }
+
+tClient = new twitter({
+  consumer_key: process.env.CONSUMER_KEY || twitterCreds.consumer_key,
+  consumer_secret: process.env.CONSUMER_SECRET || twitterCreds.consumer_secret,
+  access_token_key: process.env.ACCESS_TOKEN_KEY || twitterCreds.access_token_key,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET || twitterCreds.access_token_secret
+});
 
 client.on("error", function (err) {
   console.log("Error " + err);;
