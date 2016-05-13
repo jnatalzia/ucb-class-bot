@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/jnatalzia/ucb-class-bot",
   "dependencies": {
+    "cheerio": "^0.20.0",
     "htmlparser": "^1.7.7",
+    "redis": "^2.5.3",
     "request": "^2.72.0",
     "underscore": "^1.8.3"
   }
