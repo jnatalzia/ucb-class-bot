@@ -95,6 +95,7 @@ function checkAllClasses($) {
 
 function checkRedisStateChange(ucbClass) {
   client.get(ucbClass.key, function(err, oldState) {
+    console.log('oldState is: ' + oldState);
     if (err) {
       raise(new Error(err));
     } else if (oldState) {
