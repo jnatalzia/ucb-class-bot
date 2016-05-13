@@ -88,7 +88,7 @@ function checkAllClasses($) {
       ucbClass.state = currentState;
 
       ucbClass.key = generateCacheKeyForObj(ucbClass);
-      console.log('checking redis change for class ' + ucbClass);
+      // console.log('checking redis change for class ' + ucbClass);
       checkRedisStateChange(ucbClass);
       allClasses.push(ucbClass);
     });
@@ -98,9 +98,9 @@ function checkAllClasses($) {
 }
 
 function checkRedisStateChange(ucbClass) {
-  console.log('checking redis for ' + ucbClass.level);
+  // console.log('checking redis for ' + ucbClass.level);
   client.get(ucbClass.key, function(err, oldState) {
-    console.log('oldState is: ' + oldState);
+    // console.log('oldState is: ' + oldState);
     if (err) {
       raise(new Error(err));
     } else if (oldState) {
