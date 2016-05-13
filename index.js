@@ -57,7 +57,7 @@ function pingUcbCourseList() {
     if (response.statusCode == 200) {
       // console.log(body.toString());
       console.log('Checking course list now.');
-      checkAllClasses(cheerio.load(body.toString));
+      checkAllClasses(cheerio.load(body.toString()));
     }
 
     setTimeout(pingUcbCourseList, 60000);
@@ -70,9 +70,11 @@ function checkAllClasses($) {
   var classBlocks = $('.table');
   var allClasses = [];
 
+  // console.log('found ' + classBlocks.length + ' class blocks');
+
   _.each(classBlocks, function(node, ind) {
     var rows = $(node).find('tr');
-    console.log('rows are: ' + rows);
+    // console.log('number of rows in this classBlock' + rows.length);
     _.each(rows, function(r, rowIndex) {
       var classInfo = $(r).find('td');
       var ucbClass = {};
