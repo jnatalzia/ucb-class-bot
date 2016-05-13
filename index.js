@@ -118,6 +118,8 @@ function checkRedisStateChange(ucbClass) {
 }
 
 function tweetClassChange(ucbClass) {
+  if (ucbClass.instructor.match(/intensive/i)) return; //filter out intensives for now because no way to differentiate redis key
+
   var tweetText = `Spot just opened up in ${ucbClass.level} with ${ucbClass.instructor}. Starts ${ucbClass.start}. https://newyork.ucbtrainingcenter.com/course/open`;
 
   tClient.post('statuses/update', {status: tweetText},  function(error, tweet, response){
