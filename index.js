@@ -8,12 +8,11 @@ var UCB_CLASS_URL = 'https://newyork.ucbtrainingcenter.com/course/open';
 
 // redis
 var redis = require('redis');
-var PORT = process.env.REDIS_PORT, HOST = process.env.REDIS_HOST;
-
+var client;
 if (process.env.REDIS_URL) {
-  var client = redis.createClient(process.env.REDIS_URL);
+  client = redis.createClient(process.env.REDIS_URL, {password: process.env.REDIS_PASS || ''});
 } else {
-  var client = redis.createClient(PORT, HOST); //creates a new client
+  client = redis.createClient(); //creates a new client
 }
 
 var twitterCreds, tClient;
