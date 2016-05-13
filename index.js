@@ -1,17 +1,34 @@
 var r = require('request');
 var cheerio = require('cheerio');
-var mockData = require('./mock_data/html.mock');
+var twitter = require('twitter');
 var htmlParser = require('htmlparser');
 var _ = require('underscore');
+
 var UCB_CLASS_URL = 'https://newyork.ucbtrainingcenter.com/course/open';
 
 // redis
 var redis = require('redis');
-var PORT, HOST;
-var client = redis.createClient(); //creates a new client
+var PORT = process.env.REDIS_PORT, HOST = process.env.REDIS_HOST;
+var client = redis.createClient(PORT, HOST); //creates a new client
+
+var twitterCreds, tClient;
+try {
+  twitterCreds = require('./config/twitter_creds');
+  tClient = new twitter({
+    consumer_key: process.env.CONSUMER_KEY || twitterCreds.consumer_key,
+    consumer_secret: process.env.CONSUMER_SECRET || twitterCreds.consumer_secret,
+    access_token_key: process.env.ACCESS_TOKEN_KEY || twitterCreds.access_token_key,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET || twitterCreds.access_token_secret
+  });
+} catch (e) {
+  console.log(e);
+  console.log('ERR: Either there are no environment vars for twitter credentials set or there is no config file in the config/twitter_creds path');
+  process.exit();
+}
 
 client.on("error", function (err) {
-  console.log("Error " + err);
+  console.log("Error " + err);;
+  process.exit();
 });
 
 var classInfoStructure = {
@@ -26,18 +43,20 @@ function init() {
 }
 
 function pingUcbCourseList() {
-  r(UCB_CLASS_URL, function (error, response, body) {
-    if (error) {
-      console.log('Error in request');
-      raise(new Error(error));
-    }
-    if (response.statusCode == 200) {
-      // console.log(body.toString());
-      checkAllClasses(cheerio.load(body.toString));
-    }
-  });
+  // r(UCB_CLASS_URL, function (error, response, body) {
+  //   if (error) {
+  //     console.log('Error in request');
+  //     raise(new Error(error));
+  //   }
+  //   if (response.statusCode == 200) {
+  //     // console.log(body.toString());
+  //     checkAllClasses(cheerio.load(body.toString));
+  //   }
 
-  // var classes = checkAllClasses(cheerio.load(mockData)); //instead of hitting ucb while testing
+  //   setTimeout(pingUcbCourseList, 60000);
+  // });
+
+  var classes = checkAllClasses(cheerio.load(require('./mock_data/html.mock'))); //instead of hitting ucb while testing
 }
 
 function checkAllClasses($) {
@@ -87,7 +106,12 @@ function checkRedisStateChange(ucbClass) {
 }
 
 function tweetClassChange(ucbClass) {
-  console.log(`Spot just opened up in ${ucbClass.level} with ${ucbClass.instructor}. Starts ${ucbClass.start}. https://newyork.ucbtrainingcenter.com/course/open`);
+  var tweetText = `Spot just opened up in ${ucbClass.level} with ${ucbClass.instructor}. Starts ${ucbClass.start}. https://newyork.ucbtrainingcenter.com/course/open`);
+
+  tClient.post('statuses/update', {status: tweetText},  function(error, tweet, response){
+    if(error) throw error;
+    console.log('Tweet sent out. Message: ' + tweet);
+  });
 }
 
 function generateCacheKeyForObj(obj) {
