@@ -53,6 +53,7 @@ function pingUcbCourseList() {
       console.log('Error in request');
       raise(new Error(error));
     }
+
     if (response.statusCode == 200) {
       // console.log(body.toString());
       console.log('Checking course list now.');
@@ -71,6 +72,7 @@ function checkAllClasses($) {
 
   _.each(classBlocks, function(node, ind) {
     var rows = $(node).find('tr');
+    console.log('rows are: ' + rows);
     _.each(rows, function(r, rowIndex) {
       var classInfo = $(r).find('td');
       var ucbClass = {};
@@ -84,7 +86,7 @@ function checkAllClasses($) {
       ucbClass.state = currentState;
 
       ucbClass.key = generateCacheKeyForObj(ucbClass);
-
+      console.log('checking redis change for class ' + ucbClass);
       checkRedisStateChange(ucbClass);
       allClasses.push(ucbClass);
     });
@@ -94,6 +96,7 @@ function checkAllClasses($) {
 }
 
 function checkRedisStateChange(ucbClass) {
+  console.log('checking redis for ' + ucbClass.level);
   client.get(ucbClass.key, function(err, oldState) {
     console.log('oldState is: ' + oldState);
     if (err) {
@@ -116,7 +119,7 @@ function tweetClassChange(ucbClass) {
   var tweetText = `Spot just opened up in ${ucbClass.level} with ${ucbClass.instructor}. Starts ${ucbClass.start}. https://newyork.ucbtrainingcenter.com/course/open`;
 
   tClient.post('statuses/update', {status: tweetText},  function(error, tweet, response){
-    if(error) throw error;
+    if (error) throw error;
     console.log('Tweet sent out. Message: ' + tweet);
   });
 }
