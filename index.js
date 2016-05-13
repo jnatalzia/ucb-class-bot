@@ -43,20 +43,21 @@ function init() {
 }
 
 function pingUcbCourseList() {
-  // r(UCB_CLASS_URL, function (error, response, body) {
-  //   if (error) {
-  //     console.log('Error in request');
-  //     raise(new Error(error));
-  //   }
-  //   if (response.statusCode == 200) {
-  //     // console.log(body.toString());
-  //     checkAllClasses(cheerio.load(body.toString));
-  //   }
+  r(UCB_CLASS_URL, function (error, response, body) {
+    if (error) {
+      console.log('Error in request');
+      raise(new Error(error));
+    }
+    if (response.statusCode == 200) {
+      // console.log(body.toString());
+      console.log('Checking course list now.');
+      checkAllClasses(cheerio.load(body.toString));
+    }
 
-  //   setTimeout(pingUcbCourseList, 60000);
-  // });
+    setTimeout(pingUcbCourseList, 60000);
+  });
 
-  var classes = checkAllClasses(cheerio.load(require('./mock_data/html.mock'))); //instead of hitting ucb while testing
+  // var classes = checkAllClasses(cheerio.load(require('./mock_data/html.mock'))); //instead of hitting ucb while testing
 }
 
 function checkAllClasses($) {
@@ -99,14 +100,14 @@ function checkRedisStateChange(ucbClass) {
         if (oldState.match(/sold out/i)) tweetClassChange(ucbClass);
       }
     } else {
-      console.log('setting state for ' + ucbClass.key + ' to ' + ucbClass.state);
+      console.log('New Class! Setting state for ' + ucbClass.key + ' to ' + ucbClass.state);
       client.set(ucbClass.key, ucbClass.state);
     }
   });
 }
 
 function tweetClassChange(ucbClass) {
-  var tweetText = `Spot just opened up in ${ucbClass.level} with ${ucbClass.instructor}. Starts ${ucbClass.start}. https://newyork.ucbtrainingcenter.com/course/open`);
+  var tweetText = `Spot just opened up in ${ucbClass.level} with ${ucbClass.instructor}. Starts ${ucbClass.start}. https://newyork.ucbtrainingcenter.com/course/open`;
 
   tClient.post('statuses/update', {status: tweetText},  function(error, tweet, response){
     if(error) throw error;
@@ -121,5 +122,4 @@ function generateCacheKeyForObj(obj) {
 client.on('connect', function() {
   console.log('connected to redis');
   init();
-  client.quit();
 });
