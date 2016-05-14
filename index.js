@@ -1,6 +1,7 @@
 var req = require('request');
 var cheerio = require('cheerio');
 var RedisHandler = require('./lib/redis_handler');
+var Utils = require('./lib/utils');
 var htmlParser = require('htmlparser');
 var _ = require('underscore');
 
@@ -53,11 +54,13 @@ function checkAllCourses($) {
         ucbCourse[desc] = $(courseInfo[index]).text();
       });
 
-      var linkNode = $(courseInfo[4]);
-      var currentState = $(linkNode).find('a').text().trim();
+      var linkNode = $(courseInfo[4]).find('a');
+      var currentState = linkNode.text().trim();
+      var classID = linkNode.attr('href').split('/').pop();
       ucbCourse.state = currentState;
+      ucbCourse.id = classID;
 
-      ucbCourse.key = generateCacheKeyForObj(ucbCourse);
+      ucbCourse.key = Utils.generateCacheKeyForObj(ucbCourse);
 
       RedisHandler.checkRedisStateChange(ucbCourse);
       allCourses.push(ucbCourse);
@@ -65,10 +68,6 @@ function checkAllCourses($) {
   });
 
   return allCourses;
-}
-
-function generateCacheKeyForObj(obj) {
-  return `${obj.instructor.toLowerCase().replace(/ /g, "_")}_${obj.start.toLowerCase().replace(/,? |:/g, "_")}`;
 }
 
 init();
