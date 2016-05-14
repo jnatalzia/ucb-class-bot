@@ -57,12 +57,14 @@ function checkAllCourses($) {
       var linkNode = $(courseInfo[4]).find('a');
       var currentState = linkNode.text().trim();
       var classHref = linkNode.attr('href');
-      var classID = classHref.split('/').pop();
+      var splitHref = classHref.split('/');
+      var classID = splitHref.pop();
+      var classType = splitHref.pop();
       ucbCourse.state = currentState;
       ucbCourse.url = classHref;
+      ucbCourse.type = classType;
       ucbCourse.id = classID;
-
-      ucbCourse.key = Utils.generateCacheKeyForObj(ucbCourse);
+      ucbCourse.key = Utils.generateCacheKeyForCourse(ucbCourse);
 
       RedisHandler.checkRedisStateChange(ucbCourse);
       allCourses.push(ucbCourse);
