@@ -28,13 +28,15 @@ function pingUcbCourseList() {
 
     if (response.statusCode == 200) {
       console.log('Checking course list now.');
-      checkAllCourses(cheerio.load(body.toString()));
+      var allCourses = checkAllCourses(cheerio.load(body.toString()));
+      RedisHandler.clearOldCourses(allCourses);
     }
 
     setTimeout(pingUcbCourseList, 60000);
   });
 
-  // var coursees = checkAllCourses(cheerio.load(require('./mock_data/html.mock'))); //instead of hitting ucb while testing
+  // var courses = checkAllCourses(cheerio.load(require('./mock_data/html.mock'))); //instead of hitting ucb while testing
+  // RedisHandler.clearOldCourses(courses);
 }
 
 function checkAllCourses($) {
