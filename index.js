@@ -56,8 +56,10 @@ function checkAllCourses($) {
 
       var linkNode = $(courseInfo[4]).find('a');
       var currentState = linkNode.text().trim();
-      var classID = linkNode.attr('href').split('/').pop();
+      var classHref = linkNode.attr('href');
+      var classID = classHref.split('/').pop();
       ucbCourse.state = currentState;
+      ucbCourse.url = classHref;
       ucbCourse.id = classID;
 
       ucbCourse.key = Utils.generateCacheKeyForObj(ucbCourse);
