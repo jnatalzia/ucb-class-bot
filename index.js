@@ -33,7 +33,7 @@ function pingUcbCourseList() {
       RedisHandler.clearOldCourses(allCourses);
     }
 
-    setTimeout(pingUcbCourseList, 60000);
+    setTimeout(pingUcbCourseList, 20000);
   });
 
   // var courses = checkAllCourses(cheerio.load(require('./mock_data/html.mock'))); //instead of hitting ucb while testing
