@@ -12,7 +12,6 @@ module.exports = function(config) {
   },
   this.clearMockedCalls = function() {
     for (var key in this.mockedCalls) {
-      console.log('Clearing ' + key + ' in mock twitter module.');
       if (this.mockedCalls.hasOwnProperty(key)) this.mockedCalls[key] = [];
     }
   };

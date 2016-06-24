@@ -5,7 +5,7 @@ describe('CourseTweeter', function() {
   var twitterMock;
 
   beforeEach(function() {
-    twitterMock = require('../test_helpers/mocks/twitter.mock');
+    twitterMock = require('../test_helpers/mocks/deps/twitter.mock');
 
     // load the CourseTweeter with mock fs instead of real fs
     // publish all the private state as an object
