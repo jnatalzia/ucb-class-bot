@@ -2,3 +2,4 @@
 mock_data/
 node_modules/
 config/
+*dump.rdb
